@@ -20,7 +20,7 @@ workflows:
   build_test_deploy:
     jobs:
       - publish_image:
-        filters:
-          branches:
-            only:
-              - master
+          filters:
+            branches:
+              only:
+                - master
