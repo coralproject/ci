@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  publish_image:
+    machine: true
+    working_directory: ~/circleci-bundles
+    steps:
+      - checkout
+      - run:
+          name: Docker Login
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Build Image
+          command: docker build -t coralproject/ci .
+      - run:
+          name: Publish Image
+          command: docker push coralproject/ci:latest
