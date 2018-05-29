@@ -16,10 +16,8 @@ RUN if grep -q Debian /etc/os-release && grep -q jessie /etc/os-release; then \
   ; fi
 
 # install chrome
-# Note: Revert back to https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-# after browser testing works in google-chrome-stable 65.0.x.y
 
-RUN curl --silent --show-error --location --fail --retry 3 --output /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_64.0.3282.186-1_amd64.deb \
+RUN curl --silent --show-error --location --fail --retry 3 --output /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
       && (sudo dpkg -i /tmp/google-chrome-stable_current_amd64.deb || sudo apt-get -fy install)  \
       && rm -rf /tmp/google-chrome-stable_current_amd64.deb \
       && sudo sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' \
@@ -50,9 +48,11 @@ RUN curl --silent --show-error --location --fail --retry 3 --output /tmp/google-
 
 # Using the latest version of Firefox.
 
-RUN FIREFOX_URL="https://download-installer.cdn.mozilla.net/pub/firefox/releases/58.0/linux-x86_64/en-US/firefox-58.0.tar.bz2" \
+ENV FIREFOX_VERSION=60.0.1
+ENV FIREFOX_SHA=5e14345d77e72d43816b809a0db0a01c2c98dd196841b1c5bc07dc400af90ee8
+RUN FIREFOX_URL="https://download-installer.cdn.mozilla.net/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2" \
   && curl --silent --show-error --location --fail --retry 3 --output /tmp/firefox.tar.bz2 $FIREFOX_URL \
-  && echo '134fec04819eb56fa7b644cdd6d89623b21f4020bbedc3bd122db2a2caa4e434  /tmp/firefox.tar.bz2' | sha256sum -c \
+  && echo "${FIREFOX_SHA}  /tmp/firefox.tar.bz2" | sha256sum -c \
   && sudo apt-get install -y libgtk3.0-cil-dev libasound2 libasound2 libdbus-glib-1-2 libdbus-1-3 \
   && cd /tmp \
   && tar xjf firefox.tar.bz2 \
